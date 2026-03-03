@@ -1,206 +1,141 @@
 <!DOCTYPE html>
-<html manifest="./PSFree.manifest">
-  <head>
+<html manifest="PSFree.manifest" lang="ar" dir="rtl">
+<head>
     <script>
-        function DLProgress(e){Percent=(Math.round(e.loaded / e.total * 100));document.title="Installing offline cache: " + Percent + "%";}
-        function DisplayCacheProgress(){setTimeout(function(){;document.title="Cache Success !";},1000);setTimeout(function(){window.location.href = document.referrer;},3000);}window.applicationCache.addEventListener("progress",DLProgress,false);window.applicationCache.oncached=function(e){DisplayCacheProgress();};window.applicationCache.onupdateready=function(e){DisplayCacheProgress();};
+        function DLProgress(e){
+            var p = (Math.round(e.loaded / e.total * 100));
+            document.title = "Installing offline cache: " + p + "%";
+            document.getElementById('cache-status').style.display = 'block';
+            document.getElementById('cache-text').innerText = "جاري الحفظ: " + p + "%";
+            document.getElementById('cache-bar').style.width = p + "%";
+        }
+        function DisplayCacheProgress(){
+            document.title="Cache Success !";
+            document.getElementById('cache-text').innerText = "تم الحفظ بنجاح! افصل الإنترنت وأعد الدخول.";
+            setTimeout(function(){
+                document.getElementById('cache-status').style.display = 'none';
+                window.location.reload();
+            }, 3000);
+        }
+        window.applicationCache.addEventListener("progress",DLProgress,false);
+        window.applicationCache.oncached=function(e){DisplayCacheProgress();};
+        window.applicationCache.onupdateready=function(e){DisplayCacheProgress();};
     </script>
     <meta charset="UTF-8">
-    <title>PSFree</title>
-    <link rel='stylesheet' href='./css/index.css'>
-  </head>
-  <body>
-    <!-- Floating Menu -->
+    <title>بليغ ستور 2 - Baleegh Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --dark-navy: #020813; --electric-blue: #00adef; --btn-border: #1fa9dc; }
+        body { 
+            background: radial-gradient(circle at center, #09162a 0%, var(--dark-navy) 100%); 
+            width: 100vw; height: 100vh; color: #fff; margin: 0; padding: 0; 
+            font-family: 'Cairo', sans-serif; overflow: hidden; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        #cache-status { position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.8); z-index: 10000; text-align: center; padding: 10px 0; border-bottom: 2px solid var(--electric-blue); font-size: 18px; display: none; }
+        #cache-bar { height: 4px; background: var(--electric-blue); width: 0%; transition: width 0.2s; position: absolute; bottom: 0; left: 0;}
+
+        .floating-menu { position: absolute; right: 25px; top: 50%; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 15px; }
+        .menu-btn { background: rgba(0,0,0,0.6); border: 2px solid var(--btn-border); color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 150px; text-align: center; font-family: 'Cairo', sans-serif;}
+        .menu-btn:hover { background: var(--electric-blue); color: #000; }
+
+        .header-title { font-size: 3.5em; margin: -50px 0 15px 0; text-shadow: 0 0 20px var(--electric-blue); font-weight: 900; }
+
+        #PS4FW { background: rgba(0,0,0,0.5); padding: 8px 30px; border-radius: 25px; font-size: 18px; border: 1px solid var(--btn-border); direction: ltr; margin-bottom: 30px; }
+
+        .ps-btn { width: 160px; height: 160px; border-radius: 50%; background: #04101f; border: 4px solid var(--electric-blue); cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(0, 173, 239, 0.2); transition: transform 0.2s; margin: 0 auto;}
+        .ps-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 173, 239, 0.5); }
+        .ps-btn svg { width: 70px; fill: var(--electric-blue); }
+
+        .loader { display: none; margin-top: 20px; }
+        .loader-circle { width: 50px; height: 50px; border: 5px solid #fff; border-top: 5px solid var(--electric-blue); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; }
+        .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #061121; padding: 25px; border-radius: 12px; border: 2px solid var(--electric-blue); z-index: 1100; width: 85%; max-width: 500px; text-align: center; max-height: 80vh; overflow-y: auto;}
+        .popup h2, .popup h3 { color: var(--electric-blue); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
+        .close-btn { margin-top: 20px; padding: 10px 20px; background: var(--electric-blue); border: none; color: #000; font-weight: bold; border-radius: 5px; cursor: pointer; font-family: 'Cairo', sans-serif; }
+        .close-btn::after { content: "إغلاق"; }
+        
+        .radio-group label, .settings-container label { display: block; margin: 10px 0; text-align: left; padding-left: 20px; direction: ltr;}
+        #listfw { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px;}
+        #listfw p { margin: 0; background: #112; padding: 5px 10px; border-radius: 5px; border: 1px solid #334;}
+
+        #update-results { display: none; }
+        #DebugConsole { display: none; border: 1px solid var(--electric-blue); margin-top: 10px; background: #000; width: 80%; max-height: 150px; overflow-y: auto;}
+        #console { color: #0f0; font-family: monospace; padding: 10px; white-space: pre-wrap; margin: 0;}
+        #payloads-page { display: none; } 
+        
+        footer { position: fixed; bottom: 0; width: 100%; background: rgba(2, 8, 19, 0.95); border-top: 2px solid var(--electric-blue); text-align: center; padding: 10px 0; font-size: 14px; }
+        footer span { color: var(--electric-blue); font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="cache-status"><div id="cache-text">جاري الحفظ للاوفلاين...</div><div id="cache-bar"></div></div>
+
     <div class="floating-menu">
-      <button onclick="showpayloads()" class="menu-btn" id="payloadsbtn">Payloads</button>
-      <button class="menu-btn" id="generate-cache-btn">Force-Cache</button>
-      <button class="menu-btn" id="update-exploit">Update-Exploit</button>
-      <button onclick="showsettings()" class="menu-btn" id="settings-btn">Settings</button>
-      <button onclick="showabout()" class="menu-btn" id="about-btn">About</button>
+        <button onclick="showpayloads()" class="menu-btn" id="payloadsbtn" style="display:none;">Payloads</button>
+        <button class="menu-btn" id="generate-cache-btn">Force-Cache</button>
+        <button class="menu-btn" id="update-exploit">Update-Exploit</button>
+        <button onclick="showsettings()" class="menu-btn" id="settings-btn">الإعدادات</button>
+        <button onclick="showabout()" class="menu-btn" id="about-btn">حول</button>
     </div>
 
     <div class="header">
-      <div class="header-title" id="header-title">PSFree</div>
+        <h1 class="header-title" id="header-title">بليغ ستور 2</h1>
     </div>
 
-    <pre id="update-results" style="white-space: pre-wrap; margin-top: 10px;"></pre>
+    <pre id="update-results"></pre>
 
     <h2 id="PS4FW">PS4 FW: 0.00 | Compatible</h2>
 
     <div id="jailbreak-page">
-      <div class="center-btn-wrap">
-        <button id="jailbreak" class="ps-btn" title="PlayStation">
-          <!-- PlayStation SVG logo -->
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M0.69116 21.9548C-0.506476 22.7935 -0.284724 24.2384 2.44769 25.1419C5.18011 26.0455 8.35603 26.2323 11.1505 25.729C11.0707 25.729 11.3102 25.729 11.1505 25.729V22.8774L8.43588 23.8C7.39792 24.1355 6.35997 24.2194 5.32202 23.9677C4.5236 23.7161 4.68328 23.2129 5.64139 22.7935L11.1505 20.7806V17.6774L3.48565 20.4452C2.52754 20.7806 1.56943 21.2839 0.69116 21.9548ZM19.2146 9.37419V17.5097C22.4881 19.1871 25.0431 17.5097 25.0431 13.1484C25.0431 8.70323 23.5261 6.69032 19.1348 5.09677C16.8193 4.25806 14.4241 3.50323 12.0288 3V27.2387L17.6178 29V8.61935C17.6178 7.69677 17.6178 7.02581 18.2565 7.27742C19.1348 7.52903 19.2146 8.45161 19.2146 9.37419ZM29.5941 20.0258C27.2787 19.1871 24.8036 18.8516 22.4083 19.1032C21.0779 19.1906 19.8294 19.5869 18.5759 20.0258V23.2968L23.7656 21.2839C24.8036 20.9484 25.8415 20.8645 26.8795 21.1161C27.6779 21.3677 27.5182 21.871 26.5601 22.2903L18.5759 25.3935V28.5806L29.5941 24.3032C30.3925 23.9677 31.1111 23.5484 31.7499 22.8774C32.3088 22.0387 32.0692 20.8645 29.5941 20.0258Z"></path> </g></svg>
-        </button>
-      </div>
-      <div class="loader" id="loader" style="display: none;">
-        <div class="loader-circle"></div>
-      </div>
-    </div>
-    
-    <div id="payloads-page" style="display: none;">
-      <nav class="floating-menu-payloads">
-        <button id="toolb" onclick="showtoolspayloads()">Tools</button>
-        <button id="gameb" onclick="showgamepayloads()">Games</button>
-        <button style="display: none;" id="linuxb" onclick="showlinuxpayloads()">Linux</button>
-      </nav>
-      <div id="payloads-tools" style="display: block;">
-        <h2 id="tools">Tools</h2>
-          <div class="button-container" id="button-container">
-            <button id="binloader">Bin-Loader</button>
-            <button data-func="load_AppDumper">App-Dumper</button>
-            <button data-func="load_KernelDumper">Kernel-Dumper</button>
-            <button data-func="load_VTXDumper">PS4-Dumper-VTX</button>
-            <button data-func="load_App2USB">App2USB</button>
-            <button data-func="load_DisableUpdates">Disable-Updates</button>
-            <button data-func="load_EnableUpdates">Enable-Updates</button>
-            <button data-func="load_FTP">FTP</button>
-            <button data-func="load_HistoryBlocker">History-Blocker</button>
-            <button data-func="load_KernelClock">Kernel-Clock</button>
-            <!--<button data-func="load_Orbis">Orbis-Toolbox</button>-->
-            <button data-func="load_PS4Debug">PS4-Debug</button>
-            <button data-func="load_ToDex">ToDex</button>
-            <button data-func="load_ToDev">ToDev</button>
-            <button data-func="load_ToKratos">ToKratos</button>
-            <button data-func="load_ToCex">ToCex</button>
-            <button data-func="load_BackupDB">Backup-DB</button>
-            <button data-func="load_RestoreDB">Restore-DB</button>
-            <button data-func="load_RIFRenamer">RIF-Renamer</button>
-            <button data-func="load_ExitIDU">ExitIDU</button>
-            <button data-func="load_DisableASLR">Disable-ASLR</button>
-            <button data-func="load_ModuleDumper">Module-Dumper</button>
-            <!--<button data-func="load_WebrRTE">WebRTE</button>-->
-            <button data-func="load_PermanentUART">Permanent-UART</button>
-            <button data-func="load_PUPDecrypt">PUP-Decrypt</button>
-          </div>
-      </div>
-      <div id="payloads-game" style="display: none;">
-        <h2 id="tools">Game</h2>
-          <div class="button-container" id="button-container">
-            <button data-func="load_GTAArbic">GTAV-ArabicGuy-1.27</button>
-            <button data-func="load_GTAArbic3">GTAV-ArabicGuy-1.32</button>
-            <button data-func="load_GTAArbic33">GTAV-ArabicGuy-1.33</button>
-            <button data-func="load_GTABQ133">GTAV-BeefQueefMod-1.33</button>
-            <button data-func="load_GTABQ134">GTAV-BeefQueefMod-1.34</button>
-            <button data-func="load_GTABQ138">GTAV-BeefQueefMod-1.38</button>
-            <button data-func="load_GTAWM132">GTAV-WildeModz-1.32</button>
-            <button data-func="load_GTAWM133">GTAV-WildeModz-1.33</button>
-            <button data-func="load_GTAWM138">GTAV-WildeModz-1.38</button>
-            <button data-func="load_Oysters100">RDR2-OystersMenu-1.00</button>
-            <button data-func="load_Oysters113">RDR2-OystersMenu-1.13</button>
-            <button data-func="load_Oysters119">RDR2-OystersMenu-1.19</button>
-            <button data-func="load_Oysters124">RDR2-OystersMenu-1.24</button>
-            <button data-func="load_Oysters124">RDR2-OystersMenu-1.29</button>
-          </div>
-      </div>
-      <div id="payloads-linux" style="display: none;">
-          <h2 id="tools">Linux</h2>
-          <div class="button-container" id="button-container">
-            <h2 style="text-align: center;">PS4</h2>
-            <button data-func="load_Linux">1GBVram</button>
-            <button data-func="load_Linux2gb">2GBVram</button>
-            <button data-func="load_Linux3gb">3GBVram</button>
-            <button data-func="load_Linux4gb">4GBVram</button>
-            <h2 style="text-align: center;">PS4-PRO</h2>
-            <button data-func="load_Linux_PRO">1GBVram</button>
-            <button data-func="load_Linux2gb_PRO">2GBVram</button>
-            <button data-func="load_Linux3gb_PRO">3GBVram</button>
-            <button data-func="load_Linux4gb_PRO">4GBVram</button>
-            <h2 style="text-align: center;">PS4-Baikal</h2>
-            <button data-func="load_Linux_Baikal">1GBVram</button>
-            <button data-func="load_Linux2gb_Baikal">2GBVram</button>
-            <button data-func="load_Linux3gb_Baikal">3GBVram</button>
-            <button data-func="load_Linux4gb_Baikal">4GBVram</button>
-            <h2 style="text-align: center;">PS4-Baikal-PRO</h2>
-            <button data-func="load_Linux_PRO_Baikal">1GBVram</button>
-            <button data-func="load_Linux2gb_PRO_Baikal">2GBVram</button>
-            <button data-func="load_Linux3gb_PRO_Baikal">3GBVram</button>
-            <button data-func="load_Linux4gb_PRO_Baikal">4GBVram</button>
-          </div>
-      </div>
-    </div>
-    
-    <div id="DebugConsole">
-      <h3>Debug Console</h3>
-    
-      <div class="console" style="padding: 20px;"><pre id='console'></pre></div>
-    </div>
-    
-
-    <!-- About Popup -->
-    <div class="overlay" id="overlay-popup"></div>
-    <div class="popup" id="about-popup">
-      <h2>About PSFree</h2>
-      <div>
-        <p>Version: 1.5.1</p>
-        <p>A simple web interface for PS4 jailbreak.</p>
-      </div>
-      <div class="credits">
-        <h3>Credits</h3>
-        <div class="credits-container">
-          <a href="https://github.com/Al-Azif" target="_blank">Al-Azif</a>
-          <a href="https://github.com/kmeps4" target="_blank">kmeps4</a>
-          <a href="https://github.com/GoldHEN" target="_blank">GoldHEN</a>
-          <a href="https://github.com/Scene-Collective" target="_blank">Scene-Collective</a>
-          <a href="https://github.com/ps4boot" target="_blank">ps4boot</a>
-          <a href="https://github.com/SiSTR0" target="_blank">SiSTR0</a>
-          <a href="https://github.com/EchoStretch" target="_blank">EchoStretch</a>
-          <a href="https://github.com/Nazky" target="_blank">Nazky</a>
+        <div class="center-btn-wrap">
+            <button id="jailbreak" class="ps-btn" title="PlayStation">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.69116 21.9548C-0.506476 22.7935 -0.284724 24.2384 2.44769 25.1419C5.18011 26.0455 8.35603 26.2323 11.1505 25.729C11.0707 25.729 11.3102 25.729 11.1505 25.729V22.8774L8.43588 23.8C7.39792 24.1355 6.35997 24.2194 5.32202 23.9677C4.5236 23.7161 4.68328 23.2129 5.64139 22.7935L11.1505 20.7806V17.6774L3.48565 20.4452C2.52754 20.7806 1.56943 21.2839 0.69116 21.9548ZM19.2146 9.37419V17.5097C22.4881 19.1871 25.0431 17.5097 25.0431 13.1484C25.0431 8.70323 23.5261 6.69032 19.1348 5.09677C16.8193 4.25806 14.4241 3.50323 12.0288 3V27.2387L17.6178 29V8.61935C17.6178 7.69677 17.6178 7.02581 18.2565 7.27742C19.1348 7.52903 19.2146 8.45161 19.2146 9.37419ZM29.5941 20.0258C27.2787 19.1871 24.8036 18.8516 22.4083 19.1032C21.0779 19.1906 19.8294 19.5869 18.5759 20.0258V23.2968L23.7656 21.2839C24.8036 20.9484 25.8415 20.8645 26.8795 21.1161C27.6779 21.3677 27.5182 21.871 26.5601 22.2903L18.5759 25.3935V28.5806L29.5941 24.3032C30.3925 23.9677 31.1111 23.5484 31.7499 22.8774C32.3088 22.0387 32.0692 20.8645 29.5941 20.0258Z"></path></svg>
+            </button>
         </div>
+        <div class="loader" id="loader">
+            <div class="loader-circle"></div>
+        </div>
+    </div>
+    
+    <div id="payloads-page"><div class="button-container" id="button-container"></div></div>
+    
+    <div id="DebugConsole"><pre id='console'></pre></div>
+    
+    <div class="overlay" id="overlay-popup" onclick="closeabout(); closesettings();"></div>
+    <div class="popup" id="about-popup">
+      <h2>حول بليغ ستور 2</h2>
+      <div>
+        <p>تصميم: <strong>المهندس AlawiM7</strong></p>
+        <p>مبني على PSFree</p>
       </div>
       <button onclick="closeabout()" class="close-btn" id="close-about"></button>
     </div>
 
-    <!-- Settings Popup -->
-    <div class="overlay" id="overlay-popup"></div>
     <div class="popup" id="settings-popup">
-      <h2>Settings PSFree</h2>
+      <h2>الإعدادات</h2>
       <div class="main-container">
-        <div class="listfw-container">
+        <div class="listfw-container" style="display:none;">
           <div class="settings-container">
-            <h3>PS4 Firmwares supported</h3>
-            <div id="listfw">
-              <p>7.00</p>
-              <p>7.01</p>
-              <p>7.02</p>
-              <p>7.50</p>
-              <p>7.51</p>
-              <p>7.55</p>
-              <p>8.00</p>
-              <p>8.01</p>
-              <p>8.03</p>
-              <p>8.50</p>
-              <p>8.52</p>
-              <p>9.00</p>
-              <p>9.03</p>
-              <p>9.04</p>
-              <p>9.50</p>
-              <p>9.51</p>
-              <p>9.60</p>
-            </div>
+            <h3>PS4 Firmwares</h3>
+            <div id="listfw"><p>9.00</p></div>
           </div>
         </div>
         
         <div class="choosejb-container">
           <div class="settings-container">
-            <h3>Choose your flavor</h3>
+            <h3>اختر نوع الجيلبريك</h3>
             <div class="radio-group">
-              <label>
-                <input type="radio" name="hen" value="GoldHEN" onchange="savejbflavor(); choosejb('GoldHEN')"> GoldHEN
-              </label>
-              <label>
-                <input type="radio" name="hen" value="HEN" onchange="savejbflavor(); choosejb('HEN')"> HEN
-              </label>
+              <label><input type="radio" name="hen" value="GoldHEN" onchange="savejbflavor(); choosejb('GoldHEN')"> GoldHEN</label>
+              <label><input type="radio" name="hen" value="HEN" onchange="savejbflavor(); choosejb('HEN')"> HEN</label>
             </div>
-              <label>
-                <input type="checkbox" id="ckbaj" />
-                <span>Auto-Jailbreak</span>
-              </label>
-              <label>
-                <input type="checkbox" id="ckbdc" checked />
-                <span>Enable Debug Console</span>
-              </label>
+            <hr style="border-color:#333;">
+            <label><input type="checkbox" id="ckbaj" /> <span>تفعيل الجيلبريك التلقائي</span></label>
+            <label><input type="checkbox" id="ckbdc" checked /> <span>تفعيل Debug Console</span></label>
           </div>
         </div>
       </div>
@@ -210,6 +145,12 @@
       </div>
       <button onclick="closesettings()" class="close-btn" id="close-settings"></button>
     </div>
-    <script src='./js/index.js'></script>
-  </body>
+
+    <footer>
+        بليغ ستور - اليمن - صنعاء <br>
+        <span>المهندس AlawiM7</span>
+    </footer>
+
+    <script src="js/index.js"></script>
+</body>
 </html>
