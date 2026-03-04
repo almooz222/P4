@@ -1,15 +1,40 @@
-CACHE MANIFEST
-# نسخة محسنة للصفحة مع دعم الجولد هن والهن فقط
+CACHE MANIFEST 
+# v4.1.5 - Pro Stable Final Fix
+# Date: 2026-02-28
 
 CACHE:
 index.html
 js/index.js
-psfree/alert.mjs
-psfree/psfree.mjs
-
-# إضافة ملفات البيلود الأساسية للجولد هن والهن
 payloads/GoldHEN/GoldHEN.bin
 payloads/HEN/HEN.bin
+
+# PSFree Core Files
+psfree/alert.mjs
+psfree/config.mjs
+psfree/lapse.mjs
+psfree/psfree.mjs
+psfree/send.mjs
+
+# PSFree Modules
+psfree/module/chain.mjs
+psfree/module/int64.mjs
+psfree/module/mem.mjs
+psfree/module/memtools.mjs
+psfree/module/offset.mjs
+psfree/module/rw.mjs
+psfree/module/utils.mjs
+psfree/module/view.mjs
+
+# PSFree ROP Chains
+psfree/rop/ps4/700.mjs
+psfree/rop/ps4/750.mjs
+psfree/rop/ps4/800.mjs
+psfree/rop/ps4/850.mjs
+psfree/rop/ps4/900.mjs
+psfree/rop/ps4/950.mjs
+
+# Kernel Patches
+psfree/kpatch/900.bin
 
 NETWORK:
 *
